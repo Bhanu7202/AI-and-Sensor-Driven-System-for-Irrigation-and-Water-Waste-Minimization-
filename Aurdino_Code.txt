@@ -1,0 +1,222 @@
+#include <EveryTimer.h>
+#define PERIOD_MS 1000
+EveryTimer timer;
+
+
+#include<LiquidCrystal.h>
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
+
+#include "DHT.h"
+#define DHTPIN 7
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+
+#define key1 2
+#define key2 3
+#define key3 4
+#define key4 5
+#define key5 6
+
+#define moisture1 A0
+#define moisture2 A1
+#define moisture3 A2
+#define moisture4 A3
+
+int sec;
+
+int t, h, st, sh;
+int moisturefirst, moisturesecond;
+int cropvalue, moisture1val, moisture2val, moisture3val, moisture4val;
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(key1, INPUT_PULLUP);
+  pinMode(key2, INPUT_PULLUP);
+  pinMode(key3, INPUT_PULLUP);
+  pinMode(key4, INPUT_PULLUP);
+  pinMode(key5, INPUT_PULLUP);
+  dht.begin();
+  pinMode(moisture1, INPUT);
+  pinMode(moisture2, INPUT);
+  pinMode(moisture3, INPUT);
+  pinMode(moisture4, INPUT);
+  lcd.begin(16, 2);
+  timer.Every(PERIOD_MS, action);
+  lcd.setCursor(0, 0);
+
+
+}
+
+void loop() {
+  t = dht.readTemperature();
+
+
+  h = dht.readHumidity();
+
+  lcd.setCursor(8, 0);
+  lcd.print("TH:");
+  lcd.print(t);
+  lcd.print(" ");
+  lcd.print(h);
+
+
+  timer.Update();
+
+
+  moisture1val = analogRead(moisture1);
+  moisture1val = map(moisture1val, 0, 1023, 100, 0);
+
+
+
+  moisture2val = analogRead(moisture2);
+  moisture2val = map(moisture2val, 0, 1023, 100, 0);
+
+  moisture3val = analogRead(moisture3);
+  moisture3val = map(moisture3val, 0, 1023, 100, 0);
+
+  moisture4val = analogRead(moisture4);
+  moisture4val = map(moisture4val, 0, 1023, 100, 0);
+
+  moisturefirst = (moisture1val + moisture2val) / 2;
+  moisturesecond = (moisture3val + moisture4val) / 2;
+
+
+
+  lcd.setCursor(0, 1);
+  lcd.print("F1:");
+  if (moisturefirst <= 9) {
+    lcd.print("00");
+    lcd.print(moisturefirst);
+  }
+  else if (moisturefirst <= 99) {
+    lcd.print("0");
+    lcd.print(moisturefirst);
+  }
+  else if (moisturefirst <= 999) {
+    lcd.print("");
+    lcd.print(moisturefirst);
+  }
+
+
+  lcd.setCursor(8, 1);
+  lcd.print("F2:");
+  if (moisturesecond <= 9) {
+    lcd.print("00");
+    lcd.print(moisturesecond);
+  }
+  else if (moisturesecond <= 99) {
+    lcd.print("0");
+    lcd.print(moisturesecond);
+  }
+  else if (moisturesecond <= 999) {
+    lcd.print("");
+    lcd.print(moisturesecond);
+  }
+
+
+  lcd.setCursor(0, 0);
+
+  if (digitalRead(key1) == LOW) {
+    cropvalue = 1;
+    lcd.print("TOMATO");
+  }
+  if (digitalRead(key2) == LOW) {
+    cropvalue = 2;
+    lcd.print("WHEAT ");
+  }
+  if (digitalRead(key3) == LOW) {
+    cropvalue = 3;
+    lcd.print("RICE  ");
+  }
+  if (digitalRead(key4) == LOW) {
+    cropvalue = 4;
+    lcd.print("BANANA");
+  }
+  if (digitalRead(key5) == LOW) {
+    cropvalue = 5;
+    lcd.print("COCNUT");
+  }
+
+  Serial.print("Crop Value :");
+  Serial.println(cropvalue);
+
+  senddata();
+  delay(1000);
+}
+
+
+void action()
+{
+  sec++;
+}
+void senddata()
+{
+  Serial.print('*');
+  if (cropvalue <= 9) {
+    Serial.print("00");
+    Serial.print(cropvalue);
+  }
+  else if (cropvalue <= 99) {
+    Serial.print("0");
+    Serial.print(cropvalue);
+  }
+  else if (cropvalue <= 999) {
+    Serial.print("");
+    Serial.print(cropvalue);
+  }
+
+
+  if (moisturefirst <= 9) {
+    Serial.print("00");
+    Serial.print(moisturefirst);
+  }
+  else if (moisturefirst <= 99) {
+    Serial.print("0");
+    Serial.print(moisturefirst);
+  }
+  else if (moisturefirst <= 999) {
+    Serial.print("");
+    Serial.print(moisturefirst);
+  }
+
+  if (moisturesecond <= 9) {
+    Serial.print("00");
+    Serial.print(moisturesecond);
+  }
+  else if (moisturesecond <= 99) {
+    Serial.print("0");
+    Serial.print(moisturesecond);
+  }
+  else if (moisturesecond <= 999) {
+    Serial.print("");
+    Serial.print(moisturesecond);
+  }
+
+  if (t <= 9) {
+    Serial.print("00");
+    Serial.print(t);
+  }
+  else if (t <= 99) {
+    Serial.print("0");
+    Serial.print(t);
+  }
+  else if (t <= 999) {
+    Serial.print("");
+    Serial.print(t);
+  }
+
+  if (h <= 9) {
+    Serial.print("00");
+    Serial.print(h);
+  }
+  else if (h <= 99) {
+    Serial.print("0");
+    Serial.print(h);
+  }
+  else if (h <= 999) {
+    Serial.print("");
+    Serial.print(h);
+  }
+
+}

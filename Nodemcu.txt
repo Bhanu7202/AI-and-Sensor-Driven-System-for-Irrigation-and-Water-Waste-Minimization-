@@ -1,0 +1,157 @@
+//e2781iot@gotgel.org
+//Info@2024
+
+#define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+const char* ssid     = "IOT";
+const char* password = "123456789";
+
+
+#define BLYNK_TEMPLATE_ID "TMPL3_FLhOayx"
+#define BLYNK_TEMPLATE_NAME "AI BASED IRRIGATION SYSTEM"
+#define BLYNK_AUTH_TOKEN "oexxsVM_hFfU-IK-h1q-inkWh-FUZMsD"
+
+char auth[] = BLYNK_AUTH_TOKEN;
+BlynkTimer timer;
+
+
+int i;
+
+int pureval;
+unsigned int m = 0, act = 0, val, val1, val2, val3, val4, val5;
+
+String inputString = "";
+unsigned char a[200];
+
+#define pump D5
+#define valve1 D6
+#define valve2 D7
+
+int outputvalue;
+void setup()
+{
+  // Debug console
+  Serial.begin(9600);
+  pinMode(valve1, OUTPUT);
+  pinMode(valve2, OUTPUT);
+  pinMode(pump, OUTPUT);
+
+  digitalWrite(valve1, LOW);
+  digitalWrite(valve2, LOW);
+  digitalWrite(pump, LOW);
+
+  Blynk.begin(auth, ssid, password, "blynk.cloud", 80);
+}
+
+
+
+
+void loop()
+{
+  delay(200);
+
+  rec();
+
+  if (outputvalue == 1)
+  {
+    digitalWrite(valve1, HIGH);
+    delay(2000);
+    digitalWrite(pump, HIGH);
+
+    Blynk.virtualWrite(V2, "PUMP AND VALVE ONE ON");
+  }
+  if (outputvalue == 2)
+  {
+    digitalWrite(pump, LOW);
+    delay(1000);
+    digitalWrite(valve1, LOW);
+    digitalWrite(valve2, LOW);
+    Blynk.virtualWrite(V2, "VALVE ONE,TWO, PUMP OFF           ");
+  }
+
+  if (outputvalue == 3)
+  {
+    digitalWrite(valve2, HIGH);
+    delay(2000);
+    digitalWrite(pump, HIGH);
+    Blynk.virtualWrite(V2, "PUMP AND VALVE TWO ON");
+  }
+
+  if (outputvalue == 4)
+  {
+    digitalWrite(pump, LOW);
+    delay(1000);
+    digitalWrite(valve1, LOW);
+    digitalWrite(valve2, LOW);
+    Blynk.virtualWrite(V2, "VALVE ONE,TWO, PUMP OFF           ");
+  }
+
+  if (outputvalue == 5)
+  {
+    digitalWrite(valve1, HIGH);
+    digitalWrite(valve2, HIGH);
+    delay(2000);
+    digitalWrite(pump, HIGH);
+    Blynk.virtualWrite(V2, "PUMP, VALVE 1, VALVE 2 ON");
+  }
+
+
+  if (outputvalue == 6)
+  {
+    digitalWrite(pump, LOW);
+    delay(1000);
+    digitalWrite(valve1, LOW);
+    digitalWrite(valve2, LOW);
+    Blynk.virtualWrite(V2, "PUMP, VALVE 1, VALVE 2 OFF");
+  }
+
+
+  Blynk.virtualWrite(V0, val);
+
+  Blynk.virtualWrite(V1, "M1:" + String(val1) + "  M2: " + String(val2));
+
+  Blynk.virtualWrite(V3, "T:" + String(val3) + "  H: " + String(val4));
+
+  delay(200);
+  Blynk.run();
+}
+
+
+
+
+void rec()
+{
+  while (Serial.available())
+  {
+    char data;
+    data = Serial.read();
+
+    a[m] = data;
+    if (a[0] == '*')
+    {
+      if (m <= 15)
+      {
+        m++;
+      }
+    }
+  }
+  if (m > 1)
+  {
+    val = (a[1] - 0x30) * 100 + (a[2] - 0x30) * 10 + (a[3] - 0x30);
+    val1 = (a[4] - 0x30) * 100 + (a[5] - 0x30) * 10 + (a[6] - 0x30);
+    val2 = (a[7] - 0x30) * 100 + (a[8] - 0x30) * 10 + (a[9] - 0x30);
+    val3 = (a[10] - 0x30) * 100 + (a[11] - 0x30) * 10 + (a[12] - 0x30);
+    val4 = (a[13] - 0x30) * 100 + (a[14] - 0x30) * 10 + (a[15] - 0x30);
+
+    m = 0;
+  }
+}
+
+
+BLYNK_WRITE(V4)
+{
+  int button = param.asInt(); // read button
+  outputvalue = button;
+}

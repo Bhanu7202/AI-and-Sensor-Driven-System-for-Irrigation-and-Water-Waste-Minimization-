@@ -1,0 +1,15 @@
+E-2781 
+
+Data Get Link : 
+https://blynk.cloud/external/api/get?token=oexxsVM_hFfU-IK-h1q-inkWh-FUZMsD&V0  - CROP DATA (1-TOMATO, 2-WHEAT, 3-RICE, 4-BANANA, 5-COCONUT)
+https://blynk.cloud/external/api/get?token=oexxsVM_hFfU-IK-h1q-inkWh-FUZMsD&V1  - MOISTURE SENSOR VALUE (M1-MOISTURE SENSOR ONE (0-100%),M2-MOISTURE SENSOR TWO(0-100%))
+https://blynk.cloud/external/api/get?token=oexxsVM_hFfU-IK-h1q-inkWh-FUZMsD&V3   TEMPERATURE AND HUMIDITY
+ 
+
+Data Update Link :
+https://blynk.cloud/external/api/update?token=oexxsVM_hFfU-IK-h1q-inkWh-FUZMsD&V4=   (1-valve 1 and pump on)
+										     (2-valve 1 ,2, pump off)  
+										     (3-valve 2 and pump on) 
+										     (4-valve 1 ,2, pump off)  
+										     (5-valve 1 and valve 2 and pump on)
+										     (6-valve 1 and valve 2 and pump off)

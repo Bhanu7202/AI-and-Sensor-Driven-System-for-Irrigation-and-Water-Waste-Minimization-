@@ -1,0 +1,1 @@
+# AI-and-Sensor-Driven-System-for-Irrigation-and-Water-Waste-Minimization-
